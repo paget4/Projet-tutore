@@ -2,6 +2,8 @@ version: "3.3"
 
 volumes:
   letsencrypt:
+  db:
+  app:
 
 services:
 
@@ -40,3 +42,35 @@ services:
       - "traefik.http.routers.whoami.rule=Host(`www.projet-tut-s2-12.ml`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    environment:
+      #- POSTGRES_ROOT_PASSWORD=$NEXTCLOUD_POSTGRES_ROOT_PASSWORD  # Mot de passe de l'utilisateur root de mariadb
+      - POSTGRES_DB=$NEXTCLOUD_POSTGRES_DATABASE  # Nom de la base de donnees creer l'itialisation du conteneur
+      - POSTGRES_USER=$NEXTCLOUD_POSTGRES_USER  # Nom de l'utilisateur de la base de donn      es cr            e
+      - POSTGRES_PASSWORD=$NEXTCLOUD_POSTGRES_PASSWORD  # Mot de passe de l'utilisateur cr
+
+  app:
+    image: nextcloud
+    container_name: app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`nextcloud.projet-tut-s2-12.ml`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+    volumes:
+      - "app:/var/www/html"
+    environment:
+      - POSTGRES_HOST=$NEXTCLOUD_POSTGRES_HOST  # Nom du conteneur de la base de donnees
+      - POSTGRES_DB=$NEXTCLOUD_POSTGRES_DATABASE  # Nom de la base de donnees
+      - POSTGRES_USER=$NEXTCLOUD_POSTGRES_USER  # Nom de l'utilisateur de la base de donnees
+      - POSTGRES_PASSWORD=$NEXTCLOUD_POSTGRES_PASSWORD  # Mot de passe de l'utilisateur de la base de donnees
+      - NEXTCLOUD_ADMIN_USER=$NEXTCLOUD_ADMIN_USER
+      - NEXTCLOUD_ADMIN_PASSWORD=$NEXTCLOUD_ADMIN_PASSWORD
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.projet-tut-s2-12.ml
+
+    depends_on:
+      - db
