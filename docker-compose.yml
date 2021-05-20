@@ -49,7 +49,7 @@ services:
     volumes:
       - "db:/var/lib/postgresql/data"
     environment:
-      #- POSTGRES_ROOT_PASSWORD=$NEXTCLOUD_POSTGRES_ROOT_PASSWORD  # Mot de passe de l'utilisateur root de mariadb
+      - POSTGRES_ROOT_PASSWORD=$NEXTCLOUD_POSTGRES_ROOT_PASSWORD
       - POSTGRES_DB=$NEXTCLOUD_POSTGRES_DATABASE  # Nom de la base de donnees creer l'itialisation du conteneur
       - POSTGRES_USER=$NEXTCLOUD_POSTGRES_USER  # Nom de l'utilisateur de la base de donn      es cr            e
       - POSTGRES_PASSWORD=$NEXTCLOUD_POSTGRES_PASSWORD  # Mot de passe de l'utilisateur cr
